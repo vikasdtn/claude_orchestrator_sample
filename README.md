@@ -1,6 +1,7 @@
 # Multi-Agent Orchestrator Sample
 
-This folder contains comprehensive documentation for the Multi-Agent Orchestrator Utility Agent System.
+This folder contains v0 base for building a Agentic Orchestrator, along with comprehensive documentation for the Multi-Agent Orchestrator Utility Agent System.
+Please use and enhance to meet current usecases. 
 
 ## Contents
 

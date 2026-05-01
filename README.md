@@ -1,4 +1,4 @@
-# Multi-Agent Orchestrator System Documentation
+# Multi-Agent Orchestrator Sample
 
 This folder contains comprehensive documentation for the Multi-Agent Orchestrator Utility Agent System.
 

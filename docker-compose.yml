@@ -1,0 +1,108 @@
+# Docker Compose for local development/testing only
+# Production deployment uses AWS Bedrock AgentCore Runtime via Terraform
+# See infrastructure/agentcore.tf for production configuration
+
+version: '3.8'
+
+services:
+  orchestrator:
+    build:
+      context: .
+      dockerfile: orchestrator/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - AWS_REGION=us-east-1
+      - BEDROCK_MODEL_ID=anthropic.claude-3-sonnet-20240229-v1:0
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+      - PRODUCT_INFO_AGENT_URL=http://product-info:8080
+      - FAQ_AGENT_URL=http://faq:8080
+      - KNOWN_OUTAGES_AGENT_URL=http://known-outages:8080
+      - SERVICE_INFO_AGENT_URL=http://service-info:8080
+      - TICKET_UPDATES_AGENT_URL=http://ticket-updates:8080
+      - BILLING_AGENT_URL=http://billing:8080
+      - SALES_AGENT_URL=http://sales:8080
+      - TECHNICAL_SUPPORT_AGENT_URL=http://technical-support:8080
+      - ACCOUNT_ADMIN_AGENT_URL=http://account-admin:8080
+    depends_on:
+      - product-info
+      - faq
+      - known-outages
+      - service-info
+      - ticket-updates
+      - billing
+      - sales
+      - technical-support
+      - account-admin
+
+  product-info:
+    build:
+      context: .
+      dockerfile: agents/product_info/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  faq:
+    build:
+      context: .
+      dockerfile: agents/faq/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  known-outages:
+    build:
+      context: .
+      dockerfile: agents/known_outages/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  service-info:
+    build:
+      context: .
+      dockerfile: agents/service_info/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  ticket-updates:
+    build:
+      context: .
+      dockerfile: agents/ticket_updates/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  billing:
+    build:
+      context: .
+      dockerfile: agents/billing/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  sales:
+    build:
+      context: .
+      dockerfile: agents/sales/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  technical-support:
+    build:
+      context: .
+      dockerfile: agents/technical_support/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080
+
+  account-admin:
+    build:
+      context: .
+      dockerfile: agents/account_admin/Dockerfile
+    environment:
+      - AWS_REGION=us-east-1
+      - AGENTCORE_GATEWAY_URL=http://gateway:8080

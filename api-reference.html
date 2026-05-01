@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - Multi-Agent Orchestrator System Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-dark: #1e40af; --bg: #ffffff;
+            --bg-secondary: #f8fafc; --text: #1e293b; --text-secondary: #64748b;
+            --border: #e2e8f0; --nav-width: 260px; --header-height: 60px;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); }
+        .header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; z-index: 100; }
+        .header h1 { font-size: 1.25rem; font-weight: 600; color: var(--text); }
+        .nav { position: fixed; top: var(--header-height); left: 0; width: var(--nav-width); height: calc(100vh - var(--header-height)); background: var(--bg-secondary); border-right: 1px solid var(--border); overflow-y: auto; padding: 1.5rem 0; }
+        .nav-item { display: block; padding: 0.625rem 1.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: all 0.2s; }
+        .nav-item:hover { background: rgba(37, 99, 235, 0.08); color: var(--primary); }
+        .nav-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); font-weight: 500; border-left: 3px solid var(--primary); }
+        .content { margin-left: var(--nav-width); margin-top: var(--header-height); padding: 3rem; max-width: 900px; }
+        .content h1 { font-size: 2.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text); }
+        .content h2 { font-size: 1.75rem; font-weight: 600; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--text); }
+        .content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem; color: var(--text); }
+        .content h4 { font-size: 1.1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text); }
+        .content p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .content a { color: var(--primary); text-decoration: none; }
+        .content a:hover { text-decoration: underline; }
+        .content ul, .content ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        .content li { margin-bottom: 0.5rem; }
+        .content table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.875rem; }
+        .content th { background: var(--bg-secondary); padding: 0.75rem; text-align: left; font-weight: 600; border: 1px solid var(--border); }
+        .content td { padding: 0.75rem; border: 1px solid var(--border); }
+        .content pre { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 1rem 0; font-size: 0.875rem; white-space: pre-wrap; word-wrap: break-word; }
+        .content code { background: var(--bg-secondary); padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.875rem; font-family: 'Courier New', monospace; }
+        .content pre code { background: none; padding: 0; }
+        .content hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+        .content blockquote { border-left: 4px solid var(--primary); padding-left: 1rem; margin: 1rem 0; color: var(--text-secondary); font-style: italic; }
+        @media (max-width: 768px) { .nav { transform: translateX(-100%); } .content { margin-left: 0; padding: 2rem 1rem; } }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Multi-Agent Orchestrator System Documentation</h1></div>
+        <nav class="nav">
+        <a class="nav-item" href="index.html">Home</a>
+        <a class="nav-item" href="installation-guide.html">Installation Guide</a>
+        <a class="nav-item" href="developer-guide.html">Developer Guide</a>
+        <a class="nav-item" href="architecture-design.html">Architecture Design</a>
+        <a class="nav-item" href="code-walkthrough.html">Code Walkthrough</a>
+        <a class="nav-item" class="nav-item active" href="api-reference.html">API Reference</a>
+        <a class="nav-item" href="file-structure.html">File Structure</a>
+        <a class="nav-item" href="operations-guide.html">Operations Guide</a>
+    </nav>
+    <main class="content">
+<h1>API Reference</h1>
+
+<div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 1.5rem; margin-bottom: 2rem; border-radius: 4px;">
+    <h3 style="margin-top: 0; color: #1e40af;">📘 What This Document Covers</h3>
+    <p style="margin-bottom: 0.5rem;"><strong>Purpose:</strong> This reference provides complete API specifications for all endpoints, request/response formats, and data models.</p>
+    <p style="margin-bottom: 0.5rem;"><strong>Who should use this:</strong> Developers integrating with the system, writing API clients, or testing endpoints.</p>
+    <p style="margin-bottom: 0;"><strong>What you'll learn:</strong> Orchestrator and utility agent endpoints, request/response schemas, data models (TypeScript definitions), error responses, rate limits, and authentication requirements.</p>
+</div>
+
+<h2>Orchestrator API</h2>
+
+<h3>Base URL</h3>
+<pre><code>http://&lt;orchestrator-host&gt;:8080
+</code></pre>
+
+<h3>Endpoints</h3>
+
+<h4>POST /process</h4>
+
+<p>Process a customer intent through the orchestrator.</p>
+
+<strong>Request Body</strong>
+<pre><code>{
+&quot;customer_id&quot;: &quot;string (required)&quot;,
+&quot;intent&quot;: &quot;string (required)&quot;,
+&quot;session_id&quot;: &quot;string (optional)&quot;,
+&quot;metadata&quot;: &quot;object (optional)&quot;
+}
+</code></pre>
+<table>
+<thead><tr><th>&quot;priority&quot;: &quot;low</th><th>medium</th><th>high</th><th>critical (default: medium)&quot;,</th></tr></thead><tbody>
+</tbody></table>
+
+<strong>Response</strong>
+<pre><code>{
+&quot;request_id&quot;: &quot;uuid&quot;,
+&quot;customer_id&quot;: &quot;string&quot;,
+&quot;intent&quot;: &quot;string&quot;,
+&quot;execution_plan&quot;: {
+&quot;plan_id&quot;: &quot;string&quot;,
+&quot;customer_id&quot;: &quot;string&quot;,
+&quot;intent&quot;: &quot;string&quot;,
+&quot;steps&quot;: [
+{
+&quot;step_number&quot;: 1,
+&quot;agent_type&quot;: &quot;billing&quot;,
+&quot;instruction&quot;: &quot;string&quot;,
+&quot;depends_on&quot;: [],
+&quot;reason&quot;: &quot;string&quot;
+}
+],
+&quot;requires_human_review&quot;: false,
+&quot;human_review_reason&quot;: null
+},
+&quot;agent_responses&quot;: [
+{
+&quot;request_id&quot;: &quot;string&quot;,
+&quot;agent_type&quot;: &quot;string&quot;,
+&quot;success&quot;: true,
+&quot;response&quot;: &quot;string&quot;,
+&quot;tools_used&quot;: [&quot;tool1&quot;, &quot;tool2&quot;],
+&quot;data&quot;: {},
+&quot;confidence&quot;: 0.95,
+&quot;requires_escalation&quot;: false,
+&quot;escalation_reason&quot;: null,
+&quot;timestamp&quot;: &quot;2024-01-01T00:00:00Z&quot;
+}
+],
+&quot;final_response&quot;: &quot;string&quot;,
+&quot;success&quot;: true,
+&quot;requires_escalation&quot;: false,
+&quot;escalation_reason&quot;: null
+}
+</code></pre>
+<table>
+<thead><tr><th>&quot;estimated_complexity&quot;: &quot;low</th><th>medium</th><th>high&quot;,</th></tr></thead><tbody>
+</tbody></table>
+
+<strong>Example</strong>
+<pre><code>curl -X POST http://localhost:8080/process \
+-H &quot;Content-Type: application/json&quot; \
+-d &#x27;{
+&quot;customer_id&quot;: &quot;cust-12345&quot;,
+&quot;intent&quot;: &quot;What is my current account balance?&quot;,
+&quot;priority&quot;: &quot;medium&quot;
+}&#x27;
+</code></pre>
+
+<h4>GET /health</h4>
+
+<p>Health check endpoint.</p>
+
+<strong>Response</strong>
+<pre><code>{
+&quot;agent_type&quot;: &quot;orchestrator&quot;,
+&quot;status&quot;: &quot;healthy&quot;,
+&quot;model_id&quot;: &quot;anthropic.claude-3-sonnet-20240229-v1:0&quot;,
+&quot;utility_agents&quot;: [&quot;billing&quot;, &quot;faq&quot;, &quot;...&quot;]
+}
+</code></pre>
+
+<h4>GET /agents</h4>
+
+<p>List available utility agents.</p>
+
+<strong>Response</strong>
+<pre><code>{
+&quot;agents&quot;: {
+&quot;billing&quot;: &quot;http://billing:8080&quot;,
+&quot;faq&quot;: &quot;http://faq:8080&quot;,
+&quot;...&quot;
+}
+}
+</code></pre>
+
+<hr>
+
+<h2>Utility Agent API</h2>
+
+<p>All utility agents share the same API interface.</p>
+
+<h3>Base URL</h3>
+<pre><code>http://&lt;agent-name&gt;:8080
+</code></pre>
+
+<h3>Endpoints</h3>
+
+<h4>POST /process</h4>
+
+<p>Process a query through the utility agent.</p>
+
+<strong>Request Body</strong>
+<pre><code>{
+&quot;query&quot;: &quot;string (required)&quot;,
+&quot;customer_id&quot;: &quot;string (optional)&quot;,
+&quot;context&quot;: &quot;object (optional)&quot;
+}
+</code></pre>
+<table>
+<thead><tr><th>&quot;priority&quot;: &quot;low</th><th>medium</th><th>high</th><th>critical (default: medium)&quot;,</th></tr></thead><tbody>
+</tbody></table>
+
+<strong>Response</strong>
+<pre><code>{
+&quot;request_id&quot;: &quot;uuid&quot;,
+&quot;agent_type&quot;: &quot;billing&quot;,
+&quot;success&quot;: true,
+&quot;response&quot;: &quot;Your current balance is $150.00&quot;,
+&quot;tools_used&quot;: [&quot;get_account_balance&quot;],
+&quot;data&quot;: {
+&quot;tool_results&quot;: [
+{
+&quot;tool_name&quot;: &quot;get_account_balance&quot;,
+&quot;success&quot;: true,
+&quot;result&quot;: {&quot;balance&quot;: 150.00, &quot;currency&quot;: &quot;USD&quot;},
+&quot;execution_time_ms&quot;: 234
+}
+]
+},
+&quot;confidence&quot;: 0.95,
+&quot;requires_escalation&quot;: false,
+&quot;escalation_reason&quot;: null,
+&quot;timestamp&quot;: &quot;2024-01-01T00:00:00Z&quot;
+}
+</code></pre>
+
+<h4>GET /health</h4>
+
+<p>Health check endpoint.</p>
+
+<strong>Response</strong>
+<pre><code>{
+&quot;agent_type&quot;: &quot;billing&quot;,
+&quot;status&quot;: &quot;healthy&quot;,
+&quot;model_id&quot;: &quot;anthropic.claude-3-sonnet-20240229-v1:0&quot;,
+&quot;gateway_url&quot;: &quot;http://gateway:8080&quot;,
+&quot;available_tools&quot;: [&quot;get_account_balance&quot;, &quot;get_invoices&quot;, &quot;...&quot;]
+}
+</code></pre>
+
+<hr>
+
+<h2>Data Models</h2>
+
+<h3>OrchestratorPayload</h3>
+<pre><code>{
+customer_id: string;      // Required - Customer account ID
+intent: string;           // Required - Customer query/intent
+session_id?: string;      // Optional - Session tracking ID
+priority?: Priority;      // Optional - Request priority
+metadata?: object;        // Optional - Additional context
+}
+</code></pre>
+
+<h3>SecurityVerificationRequest</h3>
+<pre><code>{
+request_id: string;       // Unique request identifier
+customer_id: string;      // Customer account ID
+intent: string;           // Original customer intent
+execution_plan: ExecutionPlan;  // Plan to be verified
+priority: Priority;       // Request priority
+metadata: object;         // Additional context
+}
+</code></pre>
+
+<h3>SecurityVerificationResponse</h3>
+<pre><code>{
+request_id: string;       // Original request identifier
+approved: boolean;        // Whether plan is approved
+risk_level: RiskLevel;    // low, medium, high, critical
+denial_reason?: string;   // Reason if denied
+modified_plan?: ExecutionPlan;  // Modified plan if suggested
+restrictions: string[];   // Restrictions on execution
+required_audit: boolean;  // Whether audit logging required
+audit_id?: string;        // Security audit trail ID
+}
+</code></pre>
+
+<h3>ExecutionPlan</h3>
+<pre><code>{
+plan_id: string;
+customer_id: string;
+intent: string;
+steps: ExecutionStep[];
+requires_human_review: boolean;
+human_review_reason?: string;
+}
+</code></pre>
+<table>
+<thead><tr><th>estimated_complexity: &quot;low&quot;</th><th>&quot;medium&quot;</th><th>&quot;high&quot;;</th></tr></thead><tbody>
+</tbody></table>
+
+<h3>ExecutionStep</h3>
+<pre><code>{
+step_number: number;
+agent_type: AgentType;
+instruction: string;
+depends_on: number[];     // Step numbers this depends on
+reason: string;
+}
+</code></pre>
+
+<h3>AgentResponse</h3>
+<pre><code>{
+request_id: string;
+agent_type: string;
+success: boolean;
+response: string;
+tools_used: string[];
+data: object;
+confidence: number;       // 0.0 to 1.0
+requires_escalation: boolean;
+escalation_reason?: string;
+timestamp: string;        // ISO 8601
+}
+</code></pre>
+
+<h3>OrchestratorResponse</h3>
+<pre><code>{
+request_id: string;
+customer_id: string;
+intent: string;
+execution_plan: ExecutionPlan;
+security_verification?: SecurityVerificationResponse;  // Security check result
+agent_responses: AgentResponse[];
+final_response: string;
+success: boolean;
+blocked_by_security: boolean;  // True if security denied
+requires_escalation: boolean;
+escalation_reason?: string;
+}
+</code></pre>
+
+<h3>ToolResult</h3>
+<pre><code>{
+tool_name: string;
+success: boolean;
+result: object;
+error?: string;
+execution_time_ms: number;
+}
+</code></pre>
+
+<h3>Priority Enum</h3>
+<pre><code>&quot;low&quot; | &quot;medium&quot; | &quot;high&quot; | &quot;critical&quot;
+</code></pre>
+
+<h3>RiskLevel Enum</h3>
+<pre><code>&quot;low&quot; | &quot;medium&quot; | &quot;high&quot; | &quot;critical&quot;
+</code></pre>
+
+<h3>AgentType Enum</h3>
+<pre><code>&quot;product_info&quot; | &quot;faq&quot; | &quot;known_outages&quot; | &quot;service_info&quot; |
+</code></pre>
+<table>
+<thead><tr><th>&quot;ticket_updates&quot;</th><th>&quot;billing&quot;</th><th>&quot;sales&quot;</th><th>&quot;technical_support&quot;</th><th>&quot;account_admin&quot;</th></tr></thead><tbody>
+</tbody></table>
+
+<hr>
+
+<h2>Error Responses</h2>
+
+<h3>400 Bad Request</h3>
+<pre><code>{
+&quot;detail&quot;: &quot;Validation error message&quot;
+}
+</code></pre>
+
+<h3>503 Service Unavailable</h3>
+<pre><code>{
+&quot;detail&quot;: &quot;Agent not initialized&quot;
+}
+</code></pre>
+
+<h3>500 Internal Server Error</h3>
+<pre><code>{
+&quot;detail&quot;: &quot;Internal server error&quot;
+}
+</code></pre>
+
+<hr>
+
+<h2>Rate Limits</h2>
+
+<table>
+<thead><tr><th>Endpoint</th><th>Rate Limit</th></tr></thead><tbody>
+<tr><td>/process</td><td>100 req/min per customer</td></tr>
+<tr><td>/health</td><td>1000 req/min</td></tr>
+</tbody></table>
+
+<hr>
+
+<h2>Authentication</h2>
+
+<p>Currently, the API does not implement authentication. In production:</p>
+<ul>
+<li>Use API Gateway with IAM authentication</li>
+<li>Or implement JWT token validation</li>
+<li>Ensure VPC-only access for internal services</li>
+</ul>
+
+    </main>
+</body>
+</html>

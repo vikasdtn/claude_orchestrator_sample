@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Guide - Multi-Agent Orchestrator System Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-dark: #1e40af; --bg: #ffffff;
+            --bg-secondary: #f8fafc; --text: #1e293b; --text-secondary: #64748b;
+            --border: #e2e8f0; --nav-width: 260px; --header-height: 60px;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); }
+        .header { position: fixed; top: 0; left: 0; right: 0; height: var(--header-height); background: var(--bg); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 2rem; z-index: 100; }
+        .header h1 { font-size: 1.25rem; font-weight: 600; color: var(--text); }
+        .nav { position: fixed; top: var(--header-height); left: 0; width: var(--nav-width); height: calc(100vh - var(--header-height)); background: var(--bg-secondary); border-right: 1px solid var(--border); overflow-y: auto; padding: 1.5rem 0; }
+        .nav-item { display: block; padding: 0.625rem 1.5rem; color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: all 0.2s; }
+        .nav-item:hover { background: rgba(37, 99, 235, 0.08); color: var(--primary); }
+        .nav-item.active { background: rgba(37, 99, 235, 0.1); color: var(--primary); font-weight: 500; border-left: 3px solid var(--primary); }
+        .content { margin-left: var(--nav-width); margin-top: var(--header-height); padding: 3rem; max-width: 900px; }
+        .content h1 { font-size: 2.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text); }
+        .content h2 { font-size: 1.75rem; font-weight: 600; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--text); }
+        .content h3 { font-size: 1.25rem; font-weight: 600; margin-top: 2rem; margin-bottom: 0.75rem; color: var(--text); }
+        .content h4 { font-size: 1.1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--text); }
+        .content p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .content a { color: var(--primary); text-decoration: none; }
+        .content a:hover { text-decoration: underline; }
+        .content ul, .content ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        .content li { margin-bottom: 0.5rem; }
+        .content table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.875rem; }
+        .content th { background: var(--bg-secondary); padding: 0.75rem; text-align: left; font-weight: 600; border: 1px solid var(--border); }
+        .content td { padding: 0.75rem; border: 1px solid var(--border); }
+        .content pre { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 1rem 0; font-size: 0.875rem; }
+        .content code { background: var(--bg-secondary); padding: 0.2rem 0.4rem; border-radius: 3px; font-size: 0.875rem; font-family: 'Courier New', monospace; }
+        .content pre code { background: none; padding: 0; }
+        .content hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+        @media (max-width: 768px) { .nav { transform: translateX(-100%); } .content { margin-left: 0; padding: 2rem 1rem; } }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>Multi-Agent Orchestrator System Documentation</h1></div>
+        <nav class="nav">
+        <a class="nav-item" href="index.html">Home</a>
+        <a class="nav-item" href="installation-guide.html">Installation Guide</a>
+        <a class="nav-item" class="nav-item active" href="developer-guide.html">Developer Guide</a>
+        <a class="nav-item" href="architecture-design.html">Architecture Design</a>
+        <a class="nav-item" href="code-walkthrough.html">Code Walkthrough</a>
+        <a class="nav-item" href="api-reference.html">API Reference</a>
+        <a class="nav-item" href="file-structure.html">File Structure</a>
+        <a class="nav-item" href="operations-guide.html">Operations Guide</a>
+    </nav>
+    <main class="content">
+        <h1>Developer Guide</h1>
+
+        <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 1.5rem; margin-bottom: 2rem; border-radius: 4px;">
+            <h3 style="margin-top: 0; color: #1e40af;">📘 What This Document Covers</h3>
+            <p style="margin-bottom: 0.5rem;"><strong>Purpose:</strong> This guide helps developers understand the codebase, contribute new features, and follow best practices.</p>
+            <p style="margin-bottom: 0.5rem;"><strong>Who should use this:</strong> Software developers working on the project, adding new agents, or modifying existing functionality.</p>
+            <p style="margin-bottom: 0;"><strong>What you'll learn:</strong> Project structure, how to add new utility agents, working with Claude and the Gateway, coding standards, testing practices, and Lambda integration examples.</p>
+        </div>
+
+        <h2>Project Structure</h2>
+        <pre><code>contact-center-agents/
+├── shared/                    # Shared utilities and base classes
+│   ├── models.py             # Pydantic data models
+│   ├── base_agent.py         # Base class for utility agents
+│   ├── claude_client.py      # Claude/Bedrock client
+│   └── gateway_client.py     # AgentCore Gateway client
+├── orchestrator/             # Multi-Agent Orchestrator
+│   ├── agent.py              # Orchestrator implementation
+│   └── main.py               # FastAPI server
+├── agents/                   # Utility agents
+│   ├── billing/
+│   ├── faq/
+│   ├── product_info/
+│   └── ...
+├── infrastructure/           # Terraform IaC for AgentCore
+├── tests/                    # Unit tests
+└── documentation/            # This folder</code></pre>
+
+        <h2>Development Workflow</h2>
+
+        <h3>Setting Up Development Environment</h3>
+        <pre><code># Create virtual environment
+python3 -m venv venv
+source venv/bin/activate
+
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Install pre-commit hooks (optional)
+pre-commit install</code></pre>
+
+        <h3>Code Style</h3>
+        <p>We use the following tools:</p>
+        <ul>
+            <li>Black for code formatting (line length: 100)</li>
+            <li>Ruff for linting</li>
+            <li>MyPy for type checking</li>
+        </ul>
+        <pre><code>black .
+ruff check .
+mypy shared/ orchestrator/ agents/</code></pre>
+
+        <h3>Running Tests</h3>
+        <pre><code>pytest tests/ -v
+pytest --cov=shared --cov-report=html
+pytest tests/test_billing.py::TestBillingAgent -v</code></pre>
+
+        <h2>Adding a New Utility Agent</h2>
+
+        <h3>Step 1: Create Agent Directory</h3>
+        <pre><code>mkdir -p agents/new_agent
+touch agents/new_agent/__init__.py
+touch agents/new_agent/agent.py
+touch agents/new_agent/main.py
+touch agents/new_agent/Dockerfile</code></pre>
+
+        <h3>Step 2: Implement the Agent</h3>
+        <pre><code># agents/new_agent/agent.py
+from typing import Any
+from shared.base_agent import BaseUtilityAgent
+from shared.claude_client import ClaudeClient
+from shared.gateway_client import AgentCoreGatewayClient
+from shared.models import AgentType, ToolCall, ToolResult
+
+class NewAgent(BaseUtilityAgent):
+    """Agent for handling new domain queries."""
+
+    def __init__(
+        self,
+        gateway_client: AgentCoreGatewayClient | None = None,
+        claude_client: ClaudeClient | None = None,
+    ):
+        super().__init__(AgentType.NEW_AGENT, gateway_client, claude_client)
+
+    @property
+    def system_prompt(self) -> str:
+        return """You are a New Agent specializing in..."""
+
+    @property
+    def available_tools(self) -> list[dict[str, Any]]:
+        return [
+            {
+                "name": "tool_name",
+                "description": "What this tool does",
+                "input_schema": {
+                    "type": "object",
+                    "properties": {
+                        "param1": {"type": "string", "description": "Parameter"}
+                    },
+                    "required": ["param1"]
+                }
+            }
+        ]
+
+    def execute_tool(self, tool_name: str, tool_input: dict[str, Any]) -> ToolResult:
+        if tool_name == "tool_name":
+            return self.gateway.invoke_tool(
+                ToolCall(tool_name="gateway_tool_name", parameters=tool_input)
+            )
+        return ToolResult(tool_name=tool_name, success=False, error="Unknown tool")</code></pre>
+
+        <h3>Step 3: Create FastAPI Server</h3>
+        <pre><code># agents/new_agent/main.py
+import logging
+import os
+import uuid
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from shared.models import AgentRequest, AgentResponse, Priority
+from .agent import NewAgent
+
+logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
+agent: NewAgent | None = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global agent
+    agent = NewAgent()
+    yield
+    if agent:
+        agent.gateway.close()
+
+app = FastAPI(title="New Agent", version="1.0.0", lifespan=lifespan)
+
+@app.get("/health")
+async def health_check():
+    if agent is None:
+        raise HTTPException(status_code=503, detail="Agent not initialized")
+    return await agent.health_check()
+
+@app.post("/process", response_model=AgentResponse)
+async def process_query(request: ProcessRequest):
+    if agent is None:
+        raise HTTPException(status_code=503, detail="Agent not initialized")
+    agent_request = AgentRequest(
+        request_id=str(uuid.uuid4()),
+        query=request.query,
+        customer_id=request.customer_id,
+        priority=Priority(request.priority),
+        context=request.context,
+    )
+    return await agent.process_request(agent_request)</code></pre>
+
+        <h3>Step 4: Add Dockerfile</h3>
+        <pre><code>FROM python:3.11-slim
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+COPY shared/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+COPY shared /app/shared
+COPY agents/new_agent /app/agents/new_agent
+ENV PYTHONPATH=/app
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+CMD ["python", "-m", "agents.new_agent.main"]</code></pre>
+
+        <h3>Step 5: Register in Infrastructure</h3>
+        <p>Update <code>infrastructure/main.tf</code>:</p>
+        <pre><code>locals {
+  utility_agents = [
+    # ... existing agents
+    "new-agent"
+  ]
+}</code></pre>
+
+        <h3>Step 6: Write Tests</h3>
+        <pre><code># tests/test_new_agent.py
+import pytest
+from unittest.mock import patch
+from shared.models import AgentType
+
+class TestNewAgent:
+    @pytest.fixture
+    def agent(self, mock_gateway, mock_claude):
+        with patch.dict("os.environ", {"AWS_REGION": "us-east-1"}):
+            from agents.new_agent.agent import NewAgent
+            return NewAgent(gateway_client=mock_gateway, claude_client=mock_claude)
+
+    def test_init(self, agent):
+        assert agent.agent_type == AgentType.NEW_AGENT</code></pre>
+
+        <h2>Working with Claude</h2>
+
+        <h3>Tool Definitions</h3>
+        <pre><code>{
+    "name": "tool_name",
+    "description": "...",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "param": {"type": "string", "description": "..."}
+        },
+        "required": ["param"]
+    }
+}</code></pre>
+
+        <h3>Best Practices</h3>
+        <ol>
+            <li>Clear descriptions - Claude uses descriptions to decide when to use tools</li>
+            <li>Specific parameters - Use enums where possible</li>
+            <li>Required vs optional - Only mark truly required params as required</li>
+            <li>Error handling - Always return ToolResult with success=False on errors</li>
+        </ol>
+
+        <h2>Gateway Integration</h2>
+        <pre><code># Using convenience methods
+result = self.gateway.query_salesforce(query, object_type)
+result = self.gateway.search_confluence(query, space_key)
+result = self.gateway.query_servicenow(table, query, limit)
+
+# Using generic invoke_tool
+result = self.gateway.invoke_tool(
+    ToolCall(tool_name="custom_tool", parameters={"key": "value"}, timeout_seconds=30)
+)</code></pre>
+
+        <h2>AgentCore Deployment</h2>
+
+        <h3>Building for AgentCore</h3>
+        <pre><code># Build and push to ECR
+./scripts/build_and_push.sh
+
+# Deploy to AgentCore
+DEPLOY=true ./scripts/build_and_push.sh</code></pre>
+
+        <h3>Environment Variables in AgentCore</h3>
+        <p>Environment variables are configured in <code>infrastructure/agentcore.tf</code>:</p>
+        <pre><code>environment_variables = {
+  AWS_REGION       = var.aws_region
+  BEDROCK_MODEL_ID = var.bedrock_model_id
+  LOG_LEVEL        = var.environment == "prod" ? "INFO" : "DEBUG"
+}</code></pre>
+
+        <h2>Debugging</h2>
+
+        <h3>Local Debugging</h3>
+        <pre><code>import logging
+logging.basicConfig(level=logging.DEBUG)
+logger.debug(f"Tool input: {tool_input}")</code></pre>
+
+        <h3>CloudWatch Logs</h3>
+        <pre><code>aws logs tail /aws/bedrock/agentcore/contact-center-dev --follow</code></pre>
+
+        <h2>Contributing</h2>
+        <ol>
+            <li>Create feature branch from <code>main</code></li>
+            <li>Write tests for new functionality</li>
+            <li>Ensure all tests pass</li>
+            <li>Update documentation</li>
+            <li>Submit pull request</li>
+        </ol>
+
+        <h3>Commit Message Format</h3>
+        <pre><code>type(scope): description
+
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation
+- test: Tests
+- refactor: Code refactoring</code></pre>
+
+        <h2>Lambda Integration</h2>
+        <p>This section provides sample code for invoking the orchestrator from an AWS Lambda function.</p>
+
+        <h3>Sample Lambda Function (Python)</h3>
+        <pre><code>"""Lambda function to invoke Contact Center Orchestrator."""
+
+import json
+import logging
+import os
+from typing import Any
+
+import boto3
+import urllib3
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Configuration
+ORCHESTRATOR_URL = os.environ.get("ORCHESTRATOR_URL", "http://orchestrator:8080")
+REQUEST_TIMEOUT = int(os.environ.get("REQUEST_TIMEOUT", "60"))
+
+http = urllib3.PoolManager()
+
+def build_orchestrator_payload(
+    customer_id: str,
+    intent: str,
+    session_id: str | None = None,
+    priority: str = "medium",
+    metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build the payload for orchestrator invocation."""
+    payload = {
+        "customer_id": customer_id,
+        "intent": intent,
+        "priority": priority,
+        "metadata": metadata or {},
+    }
+    
+    if session_id:
+        payload["session_id"] = session_id
+        
+    return payload
+
+def invoke_orchestrator(payload: dict[str, Any]) -> dict[str, Any]:
+    """Invoke the orchestrator agent."""
+    url = f"{ORCHESTRATOR_URL}/process"
+    
+    logger.info(f"Invoking orchestrator at {url}")
+    logger.info(f"Payload: {json.dumps(payload)}")
+    
+    response = http.request(
+        "POST",
+        url,
+        body=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        timeout=REQUEST_TIMEOUT,
+    )
+    
+    if response.status != 200:
+        error_msg = f"Orchestrator returned status {response.status}: {response.data.decode()}"
+        logger.error(error_msg)
+        raise Exception(error_msg)
+    
+    result = json.loads(response.data.decode())
+    logger.info(f"Orchestrator response: success={result.get('success')}")
+    
+    return result
+
+def lambda_handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
+    """Lambda handler for contact center requests."""
+    logger.info(f"Received event: {json.dumps(event)}")
+    
+    try:
+        customer_id = event.get("customer_id")
+        intent = event.get("intent")
+        
+        if not customer_id or not intent:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({"error": "customer_id and intent are required"})
+            }
+        
+        payload = build_orchestrator_payload(
+            customer_id=customer_id,
+            intent=intent,
+            session_id=event.get("session_id"),
+            priority=event.get("priority", "medium"),
+            metadata=event.get("metadata", {}),
+        )
+        
+        result = invoke_orchestrator(payload)
+        
+        if result.get("blocked_by_security"):
+            logger.warning(f"Request blocked by security: {result.get('escalation_reason')}")
+        
+        if result.get("requires_escalation"):
+            logger.info(f"Request requires escalation: {result.get('escalation_reason')}")
+        
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "request_id": result.get("request_id"),
+                "response": result.get("final_response"),
+                "success": result.get("success"),
+                "requires_escalation": result.get("requires_escalation"),
+                "escalation_reason": result.get("escalation_reason"),
+            })
+        }
+        
+    except Exception as e:
+        logger.error(f"Error processing request: {e}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": str(e)})
+        }</code></pre>
+    </main>
+</body>
+</html>
